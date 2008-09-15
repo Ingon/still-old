@@ -1,5 +1,5 @@
 package org.still.src;
 
 public enum TokenType {
-	WHITESPACE
+	WHITESPACE, SEPARATOR, NUMBER, IDENTIFIER, UNARY_OPERATOR, BINARY_OPERATOR, STRING
 }

@@ -8,4 +8,9 @@ public class Token {
 		this.type = type;
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		return "(" + type + ":" + value + ")";
+	}
 }

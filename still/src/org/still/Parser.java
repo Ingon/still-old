@@ -8,6 +8,7 @@ import org.still.src.Token;
 public class Parser {
 	public Expression parseExpression(String str) {
 		List<Token> tokens = Lexer.tokenize(str);
+		System.out.println(tokens);
 		return expression(tokens);
 	}
 	

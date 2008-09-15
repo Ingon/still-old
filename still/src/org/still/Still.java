@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import org.still.src.Expression;
+
 public class Still {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Welcome to Still.");
@@ -23,11 +25,15 @@ public class Still {
 			String line = in.readLine();
 			
 			out.println(eval(line));
+			out.println("");
 			out.flush();
 		} while(true);
 	}
 
 	private static String eval(String line) {
-		return line;
+		Context context = Context.get();
+		Expression expr = context.parser.parseExpression(line);
+		Object obj = context.runtime.eval(expr);
+		return String.valueOf(obj);
 	}
 }

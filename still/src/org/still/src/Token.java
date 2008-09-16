@@ -15,6 +15,10 @@ public class Token {
 		return "(" + type + ":" + value + ")";
 	}
 	
+	public boolean isIdentifier() {
+		return type == TokenType.IDENTIFIER;
+	}
+	
 	public boolean isSeparator() {
 		return type == TokenType.SEPARATOR;
 	}
@@ -29,5 +33,9 @@ public class Token {
 	
 	public Symbol asSymbol() {
 		return Symbol.get(value);
+	}
+	
+	public boolean is(String val) {
+		return value.equals(val);
 	}
 }

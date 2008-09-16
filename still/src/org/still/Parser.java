@@ -7,7 +7,6 @@ import org.still.src.Expression;
 import org.still.src.Identifier;
 import org.still.src.IntegerLiteral;
 import org.still.src.StringLiteral;
-import org.still.src.Symbol;
 import org.still.src.Token;
 import org.still.src.TokenType;
 import org.still.src.UnaryOperator;
@@ -58,7 +57,19 @@ public class Parser {
 		Token token = ctx.currentToken();
 		if(token.isSeparator()) {
 			if(token.value.equals(".")) {
+				ctx.nextToken();
+				Identifier propName = identifier(ctx, true);
 				
+				token = ctx.currentToken();
+				// Method call
+				if(token.isSeparator() && token.is("[")) {
+					ctx.nextToken();
+					token = ctx.currentToken();
+					
+					if(token.isSeparator() && token.is("]")) {
+//						return 
+					}
+				}
 			}
 		}
 		
@@ -66,12 +77,12 @@ public class Parser {
 	}
 	
 	private Expression leaf(ParserContext ctx) {
-		Token token = ctx.currentToken();
-		if(token.type == TokenType.IDENTIFIER) {
-			ctx.nextToken();
-			return new Identifier(token.asSymbol());
+		Expression ident = identifier(ctx, false);
+		if(ident != null) {
+			return ident;
 		}
 		
+		Token token = ctx.currentToken();
 		if(token.type == TokenType.STRING) {
 			ctx.nextToken();
 			return new StringLiteral(token.value);
@@ -94,5 +105,19 @@ public class Parser {
 		}
 		
 		throw new RuntimeException("Parse failed exception: expected simple expression");
+	}
+	
+	private Identifier identifier(ParserContext ctx, boolean strict) {
+		Token token = ctx.currentToken();
+		if(token.isIdentifier()) {
+			ctx.nextToken();
+			return new Identifier(token.asSymbol());
+		}
+		
+		if(strict) {
+			throw new RuntimeException("Parse failed exception: expected identifier");
+		} else {
+			return null;
+		}
 	}
 }

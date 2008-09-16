@@ -1,6 +1,5 @@
 package org.still.src;
 
-import org.still.Symbol;
 
 public class Identifier implements Expression {
 	public final Symbol value;

@@ -7,6 +7,7 @@ import org.still.src.Expression;
 import org.still.src.Identifier;
 import org.still.src.IntegerLiteral;
 import org.still.src.StringLiteral;
+import org.still.src.Symbol;
 import org.still.src.Token;
 import org.still.src.TokenType;
 import org.still.src.UnaryOperator;
@@ -26,11 +27,11 @@ public class Parser {
 			return left;
 		}
 		
-		Token current = ctx.currentToken();
-		if(current.type == TokenType.BINARY_OPERATOR) {
+		Token token = ctx.currentToken();
+		if(token.isBinary()) {
 			ctx.nextToken();
 			Expression right = expression(ctx);
-			return new BinaryOperator(left, Symbol.get(current.value), right);
+			return new BinaryOperator(left, token.asSymbol(), right);
 		}
 		return left;
 	}
@@ -41,19 +42,34 @@ public class Parser {
 		}
 		
 		Token token = ctx.currentToken();
-		if(token.type == TokenType.UNARY_OPERATOR) {
+		if(token.isUnary()) {
 			ctx.nextToken();
-			return new UnaryOperator(simpleExpression(ctx), Symbol.get(token.value));
+			return new UnaryOperator(operand(ctx), token.asSymbol());
 		}
 		
-		return simpleExpression(ctx);
+		return operand(ctx);
 	}
 	
-	private Expression simpleExpression(ParserContext ctx) {
+	private Expression operand(ParserContext ctx) {
+		// Method call
+		// Prop access
+		// List access
+		Expression leaf = leaf(ctx);
+		Token token = ctx.currentToken();
+		if(token.isSeparator()) {
+			if(token.value.equals(".")) {
+				
+			}
+		}
+		
+		return leaf;
+	}
+	
+	private Expression leaf(ParserContext ctx) {
 		Token token = ctx.currentToken();
 		if(token.type == TokenType.IDENTIFIER) {
 			ctx.nextToken();
-			return new Identifier(Symbol.get(token.value));
+			return new Identifier(token.asSymbol());
 		}
 		
 		if(token.type == TokenType.STRING) {
@@ -66,11 +82,11 @@ public class Parser {
 			return new IntegerLiteral(token.value);
 		}
 		
-		if(token.type == TokenType.SEPARATOR && token.value.equals("(")) {
+		if(token.isSeparator() && token.value.equals("(")) {
 			ctx.nextToken();
 			Expression internal = expression(ctx);
 			token = ctx.currentToken();
-			if(token.type != TokenType.SEPARATOR || !token.value.equals(")")) {
+			if(! token.isSeparator() || !token.value.equals(")")) {
 				throw new RuntimeException("Parse failed exception: expected )");
 			}
 			ctx.nextToken();

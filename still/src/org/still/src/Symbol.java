@@ -1,4 +1,4 @@
-package org.still;
+package org.still.src;
 
 import java.util.HashMap;
 import java.util.Map;

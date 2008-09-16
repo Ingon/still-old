@@ -1,6 +1,5 @@
 package org.still.src;
 
-import org.still.Symbol;
 
 public class UnaryOperator implements Expression {
 	public final Symbol operator;

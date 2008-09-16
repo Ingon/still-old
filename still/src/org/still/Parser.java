@@ -30,7 +30,7 @@ public class Parser {
 		if(current.type == TokenType.BINARY_OPERATOR) {
 			ctx.nextToken();
 			Expression right = expression(ctx);
-			return new BinaryOperator(left, current.value, right);
+			return new BinaryOperator(left, Symbol.get(current.value), right);
 		}
 		return left;
 	}
@@ -43,7 +43,7 @@ public class Parser {
 		Token token = ctx.currentToken();
 		if(token.type == TokenType.UNARY_OPERATOR) {
 			ctx.nextToken();
-			return new UnaryOperator(simpleExpression(ctx), token.value);
+			return new UnaryOperator(simpleExpression(ctx), Symbol.get(token.value));
 		}
 		
 		return simpleExpression(ctx);
@@ -53,7 +53,7 @@ public class Parser {
 		Token token = ctx.currentToken();
 		if(token.type == TokenType.IDENTIFIER) {
 			ctx.nextToken();
-			return new Identifier(token.value);
+			return new Identifier(Symbol.get(token.value));
 		}
 		
 		if(token.type == TokenType.STRING) {

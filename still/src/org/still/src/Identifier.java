@@ -1,9 +1,11 @@
 package org.still.src;
 
+import org.still.Symbol;
+
 public class Identifier implements Expression {
-	public final String value;
+	public final Symbol value;
 	
-	public Identifier(String value) {
+	public Identifier(Symbol value) {
 		this.value = value;
 	}
 

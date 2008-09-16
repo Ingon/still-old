@@ -1,11 +1,14 @@
 package org.still.src;
 
+import org.still.Symbol;
+
+
 public class BinaryOperator implements Expression {
 	public final Expression left;
-	public final String operator;
+	public final Symbol operator;
 	public final Expression right;
 	
-	public BinaryOperator(Expression left, String operator, Expression right) {
+	public BinaryOperator(Expression left, Symbol operator, Expression right) {
 		this.left = left;
 		this.operator = operator;
 		this.right = right;

@@ -69,6 +69,7 @@ public class Parser {
 		if(token.type == TokenType.SEPARATOR && token.value.equals("(")) {
 			ctx.nextToken();
 			Expression internal = expression(ctx);
+			token = ctx.currentToken();
 			if(token.type != TokenType.SEPARATOR || !token.value.equals(")")) {
 				throw new RuntimeException("Parse failed exception: expected )");
 			}

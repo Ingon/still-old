@@ -8,4 +8,9 @@ public class UnaryOperator implements Expression {
 		this.expression = expression;
 		this.operator = operator;
 	}
+
+	@Override
+	public String toString() {
+		return "[ OP(" + operator + ") " + expression + "]";
+	}
 }

@@ -6,4 +6,9 @@ public class Identifier implements Expression {
 	public Identifier(String value) {
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		return "I(" + value + ")";
+	}
 }

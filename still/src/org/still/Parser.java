@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.still.src.Expression;
-import org.still.src.Identifier;
 import org.still.src.IntegerLiteral;
 import org.still.src.MethodCall;
 import org.still.src.PropertyAccess;
 import org.still.src.StringLiteral;
+import org.still.src.Symbol;
 import org.still.src.Token;
 import org.still.src.TokenType;
 
@@ -53,7 +53,7 @@ public class Parser {
 		if(token.isBinary()) {
 			ctx.nextToken();
 			Expression right = expression(ctx);
-			return new MethodCall(left, new Identifier(token.asSymbol()), Arrays.asList(right));
+			return new MethodCall(left, token.asSymbol(), Arrays.asList(right));
 		}
 		return left;
 	}
@@ -66,7 +66,7 @@ public class Parser {
 		Token token = ctx.currentToken();
 		if(token.isUnary()) {
 			ctx.nextToken();
-			return new MethodCall(operand(ctx), new Identifier(token.asSymbol()), Collections.<Expression>emptyList());
+			return new MethodCall(operand(ctx), token.asSymbol(), Collections.<Expression>emptyList());
 		}
 		
 		return operand(ctx);
@@ -87,7 +87,7 @@ public class Parser {
 		}
 		
 		ctx.nextToken();
-		Identifier propName = identifier(ctx, true);
+		Symbol propName = symbol(ctx, true);
 		
 		if(! ctx.hasMoreTokens()) {
 			return new PropertyAccess(leaf, propName);
@@ -111,7 +111,7 @@ public class Parser {
 	}
 	
 	private Expression leaf(ParserContext ctx) {
-		Expression ident = identifier(ctx, false);
+		Expression ident = symbol(ctx, false);
 		if(ident != null) {
 			return ident;
 		}
@@ -141,11 +141,11 @@ public class Parser {
 		throw new RuntimeException("Parse failed exception: expected simple expression");
 	}
 	
-	private Identifier identifier(ParserContext ctx, boolean strict) {
+	private Symbol symbol(ParserContext ctx, boolean strict) {
 		Token token = ctx.currentToken();
 		if(token.isIdentifier()) {
 			ctx.nextToken();
-			return new Identifier(token.asSymbol());
+			return token.asSymbol();
 		}
 		
 		if(strict) {

@@ -3,7 +3,10 @@ package org.still.src;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Symbol implements Comparable<Symbol> {
+import org.still.RuntimeContext;
+import org.still.obj.StillObject;
+
+public class Symbol implements Comparable<Symbol>, Expression {
 	private static final Map<String, Symbol> symbols = new HashMap<String, Symbol>();
 	
 	public static synchronized Symbol get(String value) {
@@ -25,6 +28,16 @@ public class Symbol implements Comparable<Symbol> {
 		this.id = ++idGenerator;
 	}
 
+	@Override
+	public int compareTo(Symbol o) {
+		return value.compareTo(o.value);
+	}
+
+	@Override
+	public StillObject eval(RuntimeContext ctx) {
+		return ctx.get(this);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -55,11 +68,6 @@ public class Symbol implements Comparable<Symbol> {
 
 	@Override
 	public String toString() {
-		return value + ":" + id;
-	}
-
-	@Override
-	public int compareTo(Symbol o) {
-		return value.compareTo(o.value);
+		return value;
 	}
 }

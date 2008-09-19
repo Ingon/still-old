@@ -5,9 +5,9 @@ import org.still.obj.StillObject;
 
 public class PropertyAccess implements Expression {
 	public final Expression object;
-	public final Identifier property;
+	public final Symbol property;
 	
-	public PropertyAccess(Expression object, Identifier property) {
+	public PropertyAccess(Expression object, Symbol property) {
 		this.object = object;
 		this.property = property;
 	}
@@ -19,6 +19,6 @@ public class PropertyAccess implements Expression {
 
 	public StillObject eval(RuntimeContext ctx) {
 		StillObject target = object.eval(ctx);
-		return target.get(property.value);
+		return target.get(property);
 	}
 }

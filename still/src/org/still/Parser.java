@@ -1,9 +1,10 @@
 package org.still;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.still.src.BinaryOperator;
 import org.still.src.Expression;
 import org.still.src.Identifier;
 import org.still.src.IntegerLiteral;
@@ -12,7 +13,6 @@ import org.still.src.PropertyAccess;
 import org.still.src.StringLiteral;
 import org.still.src.Token;
 import org.still.src.TokenType;
-import org.still.src.UnaryOperator;
 
 public class Parser {
 	public Expression parseExpression(String str) {
@@ -53,7 +53,7 @@ public class Parser {
 		if(token.isBinary()) {
 			ctx.nextToken();
 			Expression right = expression(ctx);
-			return new BinaryOperator(left, token.asSymbol(), right);
+			return new MethodCall(left, new Identifier(token.asSymbol()), Arrays.asList(right));
 		}
 		return left;
 	}
@@ -66,7 +66,7 @@ public class Parser {
 		Token token = ctx.currentToken();
 		if(token.isUnary()) {
 			ctx.nextToken();
-			return new UnaryOperator(operand(ctx), token.asSymbol());
+			return new MethodCall(operand(ctx), new Identifier(token.asSymbol()), Collections.<Expression>emptyList());
 		}
 		
 		return operand(ctx);
@@ -77,6 +77,10 @@ public class Parser {
 		// Prop access
 		// List access
 		Expression leaf = leaf(ctx);
+		if(ctx.noMoreTokens()) {
+			return leaf;
+		}
+		
 		Token token = ctx.currentToken();
 		if(! token.isSeparator(".")) {
 			return leaf;
@@ -85,15 +89,14 @@ public class Parser {
 		ctx.nextToken();
 		Identifier propName = identifier(ctx, true);
 		
-		PropertyAccess prop = new PropertyAccess(leaf, propName);
 		if(! ctx.hasMoreTokens()) {
-			return prop;
+			return new PropertyAccess(leaf, propName);
 		}
 		
 		token = ctx.currentToken();
 		// Method call
 		if(! token.isSeparator("[")) {
-			return prop;
+			return new PropertyAccess(leaf, propName);
 		}
 		
 		ctx.nextToken();
@@ -104,7 +107,7 @@ public class Parser {
 			throw new RuntimeException("Expected ]");
 		}
 		
-		return new MethodCall(prop, expressions);
+		return new MethodCall(leaf, propName, expressions);
 	}
 	
 	private Expression leaf(ParserContext ctx) {

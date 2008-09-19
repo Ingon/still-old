@@ -6,15 +6,18 @@ import java.util.List;
 import org.still.src.Symbol;
 
 public class JavaCallableStillObject implements CallableStillObject {
-	private final Object delegate;
 	private final List<Method> methods;
 	
-	public JavaCallableStillObject(Object delegate, List<Method> methods) {
-		this.delegate = delegate;
+	public JavaCallableStillObject(List<Method> methods) {
 		this.methods = methods;
 	}
 
-	public StillObject apply(List<StillObject> params) {
+	public StillObject apply(StillObject thisRef, List<StillObject> params) {
+		if(! (thisRef instanceof JavaStillObject)) {
+			throw new RuntimeException("Unexpected reference!");
+		}
+		Object delegate = ((JavaStillObject) thisRef).getDelegate();
+		
 		Object[] rparams = mapToJava(params);
 		Method method = findRealMethod(rparams);
 		try {

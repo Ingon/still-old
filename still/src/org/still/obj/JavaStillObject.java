@@ -32,7 +32,7 @@ public class JavaStillObject implements StillObject {
 		if(methods.isEmpty()) {
 			throw new RuntimeException("Property not found: " + name);
 		}
-		return new JavaCallableStillObject(delegate, methods);
+		return new JavaCallableStillObject(methods);
 	}
 
 	protected static StillObject wrapIfNecessary(Object obj) {

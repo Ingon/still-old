@@ -8,21 +8,24 @@ import org.still.obj.CallableStillObject;
 import org.still.obj.StillObject;
 
 public class MethodCall implements Expression {
-	public final PropertyAccess property;
+	public final Expression object;
+	public final Identifier property;
 	public final List<Expression> expressions;
 	
-	public MethodCall(PropertyAccess property, List<Expression> expressions) {
+	public MethodCall(Expression object, Identifier property, List<Expression> expressions) {
+		this.object = object;
 		this.property = property;
 		this.expressions = expressions;
 	}
 
 	@Override
 	public String toString() {
-		return property + "" + expressions;
+		return object + "." + property + "" + expressions;
 	}
 
 	public StillObject eval(RuntimeContext ctx) {
-		StillObject target = property.eval(ctx);
+		StillObject targetObject = object.eval(ctx);
+		StillObject target = targetObject.get(property.value);
 		if(! (target instanceof CallableStillObject)) {
 			throw new RuntimeException("Not a method!");
 		}
@@ -33,6 +36,6 @@ public class MethodCall implements Expression {
 			params.add(exp.eval(ctx));
 		}
 		
-		return rtarget.apply(params);
+		return rtarget.apply(targetObject, params);
 	}
 }

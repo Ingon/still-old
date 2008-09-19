@@ -1,6 +1,7 @@
 package org.still.src;
 
-
+import org.still.RuntimeContext;
+import org.still.obj.StillObject;
 
 public class BinaryOperator implements Expression {
 	public final Expression left;
@@ -16,5 +17,9 @@ public class BinaryOperator implements Expression {
 	@Override
 	public String toString() {
 		return "[ " + left + " OP(" + operator + ") " + right + " ]";
+	}
+
+	public StillObject eval(RuntimeContext ctx) {
+		throw new UnsupportedOperationException();
 	}
 }

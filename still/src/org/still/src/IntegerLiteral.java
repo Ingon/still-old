@@ -1,5 +1,11 @@
 package org.still.src;
 
+import java.math.BigInteger;
+
+import org.still.RuntimeContext;
+import org.still.obj.JavaStillObject;
+import org.still.obj.StillObject;
+
 public class IntegerLiteral implements Literal {
 	public final Integer value;
 	
@@ -10,5 +16,9 @@ public class IntegerLiteral implements Literal {
 	@Override
 	public String toString() {
 		return "LI(" + value + ")";
+	}
+
+	public StillObject eval(RuntimeContext ctx) {
+		return new JavaStillObject(new BigInteger(String.valueOf(value)));
 	}
 }

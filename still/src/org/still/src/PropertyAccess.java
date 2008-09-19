@@ -14,7 +14,7 @@ public class PropertyAccess implements Expression {
 
 	@Override
 	public String toString() {
-		return "[P " + object + "." + property + "]";
+		return object + "." + property;
 	}
 
 	public StillObject eval(RuntimeContext ctx) {

@@ -17,7 +17,7 @@ import org.still.src.UnaryOperator;
 public class Parser {
 	public Expression parseExpression(String str) {
 		List<Token> tokens = Lexer.tokenize(str);
-		System.out.println(tokens);
+		System.out.println("::Lex : " + tokens);
 		ParserContext ctx = new ParserContext(tokens);
 		ctx.nextToken();
 		return expression(ctx);

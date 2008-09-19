@@ -15,7 +15,7 @@ public class IntegerLiteral implements Literal {
 
 	@Override
 	public String toString() {
-		return "LI(" + value + ")";
+		return String.valueOf(value);
 	}
 
 	public StillObject eval(RuntimeContext ctx) {

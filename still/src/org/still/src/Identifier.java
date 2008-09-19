@@ -12,7 +12,7 @@ public class Identifier implements Expression {
 
 	@Override
 	public String toString() {
-		return "I(" + value + ")";
+		return value.value;
 	}
 
 	public StillObject eval(RuntimeContext ctx) {

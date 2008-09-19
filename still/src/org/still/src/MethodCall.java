@@ -18,7 +18,7 @@ public class MethodCall implements Expression {
 
 	@Override
 	public String toString() {
-		return "[M " + property + expressions + "]";
+		return property + "" + expressions;
 	}
 
 	public StillObject eval(RuntimeContext ctx) {

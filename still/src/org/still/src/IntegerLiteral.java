@@ -6,4 +6,9 @@ public class IntegerLiteral implements Literal {
 	public IntegerLiteral(String value) {
 		this.value = Integer.parseInt(value);
 	}
+
+	@Override
+	public String toString() {
+		return "LI(" + value + ")";
+	}
 }

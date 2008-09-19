@@ -23,6 +23,10 @@ public class Token {
 		return type == TokenType.SEPARATOR;
 	}
 
+	public boolean isSeparator(String value) {
+		return isSeparator() && this.value.equals(value);
+	}
+
 	public boolean isUnary() {
 		return type == TokenType.UNARY_OPERATOR;
 	}

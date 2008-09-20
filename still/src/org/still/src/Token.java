@@ -15,8 +15,12 @@ public class Token {
 		return "(" + type + ":" + value + ")";
 	}
 	
-	public boolean isIdentifier() {
-		return type == TokenType.IDENTIFIER;
+	public boolean isSymbol() {
+		return type == TokenType.SYMBOL;
+	}
+
+	public boolean isSymbol(String value) {
+		return isSymbol() && this.value.equals(value);
 	}
 	
 	public boolean isSeparator() {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.still.src.BooleanLiteral;
 import org.still.src.Expression;
 import org.still.src.IntegerLiteral;
 import org.still.src.MethodCall;
@@ -73,9 +74,6 @@ public class Parser {
 	}
 	
 	private Expression operand(ParserContext ctx) {
-		// Method call
-		// Prop access
-		// List access
 		Expression leaf = leaf(ctx);
 		if(ctx.noMoreTokens()) {
 			return leaf;
@@ -117,16 +115,6 @@ public class Parser {
 		}
 		
 		Token token = ctx.currentToken();
-		if(token.type == TokenType.STRING) {
-			ctx.nextToken();
-			return new StringLiteral(token.value);
-		}
-		
-		if(token.type == TokenType.NUMBER) {
-			ctx.nextToken();
-			return new IntegerLiteral(token.value);
-		}
-		
 		if(token.isSeparator("(")) {
 			ctx.nextToken();
 			Expression internal = expression(ctx);
@@ -138,12 +126,35 @@ public class Parser {
 			return internal;
 		}
 		
+		if(token.type == TokenType.STRING) {
+			ctx.nextToken();
+			return new StringLiteral(token.value);
+		}
+		
+		if(token.type == TokenType.NUMBER) {
+			ctx.nextToken();
+			return new IntegerLiteral(token.value);
+		}
+		
+		if(token.isSeparator("#")) {
+			ctx.nextToken();
+			
+			token = ctx.currentToken();
+			if(token.isSymbol("t")) {
+				return new BooleanLiteral(true);
+			} else if(token.isSymbol("f")) {
+				return new BooleanLiteral(false);
+			} else if(token.isSeparator("[")) {
+				// List
+			}
+		}
+		
 		throw new RuntimeException("Parse failed exception: expected simple expression");
 	}
 	
 	private Symbol symbol(ParserContext ctx, boolean strict) {
 		Token token = ctx.currentToken();
-		if(token.isIdentifier()) {
+		if(token.isSymbol()) {
 			ctx.nextToken();
 			return token.asSymbol();
 		}

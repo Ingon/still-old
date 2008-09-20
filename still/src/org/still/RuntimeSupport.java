@@ -103,4 +103,22 @@ public class RuntimeSupport {
 		
 		return obj;
 	}
+
+	private static final Expression BOOL_TO_STRING = Context.get().parser.parseExpression("this.__wrap-value");
+	
+	public static StillObject newBoolean(boolean value) {
+		JavaStillObject wrappedValue = new JavaStillObject(value);
+		return postWrapBoolean(wrappedValue);
+	}
+
+	private static StillObject postWrapBoolean(JavaStillObject wrappedValue) {
+		StillObject obj = new PrototypeStillObject();
+		obj.set(Symbol.get("__wrap-value"), wrappedValue);
+		
+		RuntimeContext rootCtx = Context.get().rootCtx;
+		
+		obj.set(Symbol.get("to-string"), new StillFunction(rootCtx, Collections.<Symbol>emptyList(), BOOL_TO_STRING));
+		
+		return obj;
+	}
 }

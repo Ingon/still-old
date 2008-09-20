@@ -62,7 +62,7 @@ public class Lexer {
 				tokens.add(new Token(TokenType.STRING, input.substring(i, lastIndex + 1)));
 				i = lastIndex;
 			} else {
-				TokenType type = TokenType.IDENTIFIER;
+				TokenType type = TokenType.SYMBOL;
 				if(oneOf(ch, UNARY_OPERATORS)) {
 					type = TokenType.UNARY_OPERATOR;
 				} else if(oneOf(ch, BINARY_OPERATORS)) {
@@ -76,11 +76,11 @@ public class Lexer {
 						break;
 					}
 					if(type == TokenType.UNARY_OPERATOR && Character.isJavaIdentifierPart(tempChar)) {
-						type = TokenType.IDENTIFIER;
+						type = TokenType.SYMBOL;
 						continue;
 					}
 					if(type == TokenType.BINARY_OPERATOR && Character.isJavaIdentifierPart(tempChar)) {
-						type = TokenType.IDENTIFIER;
+						type = TokenType.SYMBOL;
 					}
 				}
 				String identifier = input.substring(i, lastIndex);

@@ -28,6 +28,9 @@ public class RuntimeSupport {
 						if(name.value.equals("post-wrap-string")) {
 							return postWrapString((JavaStillObject) params.get(0));
 						}
+						if(name.value.equals("post-wrap-boolean")) {
+							return postWrapBoolean((JavaStillObject) params.get(0));
+						}
 						throw new RuntimeException("Unknown method call.");
 					}
 
@@ -51,6 +54,8 @@ public class RuntimeSupport {
 	
 	private static final Expression INT_ADD_EXPRESSION = Context.get().parser.parseExpression("(thisCtx.__runtime-suport).post-wrap-integer[(this.__wrap-value).add[other.__wrap-value]]");
 	private static final Expression INT_MUL_EXPRESSION = Context.get().parser.parseExpression("(thisCtx.__runtime-suport).post-wrap-integer[(this.__wrap-value).multiply[other.__wrap-value]]");
+	private static final Expression INT_EQ_EXPRESSION = Context.get().parser.parseExpression("(thisCtx.__runtime-suport).post-wrap-boolean[(this.__wrap-value).equals[other.__wrap-value]]");
+	private static final Expression INT_COMPARE_EXPRESSION = Context.get().parser.parseExpression("(thisCtx.__runtime-suport).post-wrap-integer[(this.__wrap-value).compareTo[other.__wrap-value]]");
 	private static final Expression INT_TO_STRING = Context.get().parser.parseExpression("this.__wrap-value");
 	
 	public static StillObject newInteger(BigInteger value) {
@@ -73,6 +78,9 @@ public class RuntimeSupport {
 		obj.set(Symbol.get("*"), new StillFunction(rootCtx, params, INT_MUL_EXPRESSION));
 		obj.set(Symbol.get("mul"), new StillFunction(rootCtx, params, INT_MUL_EXPRESSION));
 		obj.set(Symbol.get("multiply"), new StillFunction(rootCtx, params, INT_MUL_EXPRESSION));
+		
+		obj.set(Symbol.get("="), new StillFunction(rootCtx, params, INT_EQ_EXPRESSION));
+		obj.set(Symbol.get("<=>"), new StillFunction(rootCtx, params, INT_COMPARE_EXPRESSION));
 		
 		obj.set(Symbol.get("to-string"), new StillFunction(rootCtx, Collections.<Symbol>emptyList(), INT_TO_STRING));
 		

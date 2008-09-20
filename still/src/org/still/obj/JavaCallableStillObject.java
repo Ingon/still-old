@@ -53,6 +53,27 @@ public class JavaCallableStillObject implements CallableStillObject {
 		if(methods.size() == 1) {
 			return methods.get(0);
 		}
-		throw new UnsupportedOperationException();
+		if(rparams.length > 1) {
+			throw new UnsupportedOperationException();
+		}
+		
+		Method bestFit = null;
+		for(Method meth : methods) {
+			if(meth.getParameterTypes()[0].isInstance(rparams[0])) {
+				if(bestFit == null) {
+					bestFit = meth;
+					continue;
+				}
+				
+				if(bestFit.getParameterTypes()[0].isAssignableFrom(meth.getParameterTypes()[0])) {
+					bestFit = meth;
+				}
+			}
+		}
+		
+		if(bestFit == null) {
+			throw new RuntimeException("No fit found");
+		}
+		return bestFit;
 	}
 }

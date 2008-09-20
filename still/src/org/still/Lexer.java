@@ -26,8 +26,8 @@ public class Lexer {
 				tokens.add(new Token(TokenType.WHITESPACE, " "));
 			} else if(oneOf(ch, SEPARATORS)) {
 				tokens.add(new Token(TokenType.SEPARATOR, String.valueOf(ch)));
-			} else if(Character.isDigit(ch)) {
-				int lastIndex = i;
+			} else if(Character.isDigit(ch) || (ch == '-' && Character.isDigit(chars[i + 1]))) {
+				int lastIndex = i + 1;
 				for(; lastIndex < chars.length; lastIndex++) {
 					char tempChar = chars[lastIndex];
 					if(Character.isDigit(tempChar)) {

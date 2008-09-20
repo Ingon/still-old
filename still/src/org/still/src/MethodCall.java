@@ -8,6 +8,7 @@ import org.still.obj.CallableStillObject;
 import org.still.obj.StillObject;
 
 public class MethodCall implements Expression {
+	private final boolean log = false;
 	public final Expression object;
 	public final Symbol property;
 	public final List<Expression> expressions;
@@ -24,7 +25,9 @@ public class MethodCall implements Expression {
 	}
 
 	public StillObject eval(RuntimeContext ctx) {
-		System.out.println("::Call: " + this);
+		if(log) {
+			System.out.println("::Call: " + this);
+		}
 		StillObject targetObject = object.eval(ctx);
 		StillObject target = targetObject.get(property);
 		if(! (target instanceof CallableStillObject)) {
@@ -37,10 +40,14 @@ public class MethodCall implements Expression {
 			params.add(exp.eval(ctx));
 		}
 		
-		System.out.println("::This: (" + this + ") " + targetObject);
-		System.out.println("::With: (" + this + ") " + params);
+		if(log) {
+			System.out.println("::This: (" + this + ") " + targetObject);
+			System.out.println("::With: (" + this + ") " + params);
+		}
 		StillObject result = rtarget.apply(targetObject, params);
-		System.out.println("::Retu: (" + this + ") " + result);
+		if(log) {
+			System.out.println("::Retu: (" + this + ") " + result);
+		}
 		return result;
 	}
 }

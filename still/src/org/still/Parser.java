@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.still.src.Block;
 import org.still.src.BooleanLiteral;
 import org.still.src.Case;
 import org.still.src.CaseWhen;
@@ -129,6 +130,11 @@ public class Parser {
 	}
 	
 	private Expression expression(ParserContext ctx) {
+		Expression block = block(ctx, false);
+		if(block != null) {
+			return block;
+		}
+		
 		Expression left = binaryOperand(ctx);
 		if(ctx.noMoreTokens()) {
 			return left;
@@ -264,5 +270,24 @@ public class Parser {
 		}
 		ctx.nextToken();
 		return internal;
+	}
+	
+	private Block block(ParserContext ctx, boolean strict) {
+		Token token = ctx.currentToken();
+		if(! token.isSeparator("{")) {
+			if(strict) {
+				throw new RuntimeException("Expected block");
+			} else {
+				return null;
+			}
+		}
+		ctx.nextToken();
+		
+		List<Statement> statements = statements(ctx);
+		token = ctx.currentToken();
+		if(! token.isSeparator("}")) {
+			throw new RuntimeException("Parse failed exception: expected }");
+		}
+		return new Block(statements);
 	}
 }

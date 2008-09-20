@@ -9,7 +9,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.still.obj.StillObject;
-import org.still.src.Expression;
 import org.still.src.Statement;
 import org.still.src.Symbol;
 

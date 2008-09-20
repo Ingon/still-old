@@ -13,7 +13,7 @@ public class StringLiteral implements Literal {
 	}
 
 	public StillObject eval(RuntimeContext ctx) {
-		return RuntimeSupport.newString(ctx, value);
+		return RuntimeSupport.newString(value);
 	}
 
 	@Override

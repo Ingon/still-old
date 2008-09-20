@@ -14,9 +14,12 @@ public class Context {
 	
 	public final Parser parser;
 	public final Runtime runtime;
+	public final RuntimeContext rootCtx;
 	
 	private Context() {
 		parser = new Parser();
 		runtime = new Runtime();
+		// Todo some other way ?
+		rootCtx = RuntimeSupport.initDefault();
 	}
 }

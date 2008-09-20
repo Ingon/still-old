@@ -34,6 +34,7 @@ public class StillFunction extends PrototypeStillObject implements CallableStill
 			newCtx.set(parameters.get(i), arguments.get(i));
 		}
 		newCtx.set(Symbol.get("this"), thisRef);
+		newCtx.set(Symbol.get("thisCtx"), newCtx);
 		
 		StillObject result = null;
 		for(Expression expr : expressions) {

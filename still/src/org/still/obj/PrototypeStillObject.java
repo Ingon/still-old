@@ -1,5 +1,6 @@
 package org.still.obj;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -23,4 +24,12 @@ public class PrototypeStillObject implements StillObject {
 		return internalMap.put(name, obj);
 	}
 
+	@Override
+	public String toString() {
+		StillObject obj = internalMap.get(Symbol.get("to-string"));
+		if(! (obj instanceof CallableStillObject)) {
+			return super.toString();
+		}
+		return String.valueOf(((CallableStillObject) obj).apply(this, Collections.<StillObject>emptyList()));
+	}
 }

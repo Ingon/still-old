@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 
+import org.still.obj.StillObject;
 import org.still.src.Expression;
 import org.still.src.Symbol;
 
@@ -20,8 +21,7 @@ public class Still {
 		PrintWriter out = new PrintWriter(os);
 		BufferedReader in = new BufferedReader(new InputStreamReader(is));
 		
-		RuntimeContext ctx = new RuntimeContext();
-		initTestContext(ctx);
+		initTestContext(Context.get().rootCtx);
 		
 		do {
 			out.print("> ");
@@ -29,21 +29,21 @@ public class Still {
 			
 			String line = in.readLine();
 			
-			out.println(eval(ctx, line));
+			out.println(eval(line));
 			out.println("");
 			out.flush();
 		} while(true);
 	}
 
-	private static String eval(RuntimeContext ctx, String line) {
+	private static String eval(String line) {
 		Context context = Context.get();
 		Expression expr = context.parser.parseExpression(line);
-		Object obj = context.runtime.eval(ctx, expr);
+		StillObject obj = context.runtime.eval(expr);
 		return String.valueOf(obj);
 	}
 	
 	private static void initTestContext(RuntimeContext ctx) {
-		ctx.set(Symbol.get("ti1"), RuntimeSupport.newInteger(ctx, new BigInteger("10")));
-		ctx.set(Symbol.get("ti2"), RuntimeSupport.newInteger(ctx, new BigInteger("20")));
+		ctx.set(Symbol.get("ti1"), RuntimeSupport.newInteger(new BigInteger("10")));
+		ctx.set(Symbol.get("ti2"), RuntimeSupport.newInteger(new BigInteger("20")));
 	}
 }

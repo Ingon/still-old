@@ -14,7 +14,7 @@ public class IntegerLiteral implements Literal {
 	}
 
 	public StillObject eval(RuntimeContext ctx) {
-		return RuntimeSupport.newInteger(ctx, value);
+		return RuntimeSupport.newInteger(value);
 	}
 
 	@Override

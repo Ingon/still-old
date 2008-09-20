@@ -10,6 +10,7 @@ import org.still.src.Case;
 import org.still.src.CaseWhen;
 import org.still.src.Expression;
 import org.still.src.IntegerLiteral;
+import org.still.src.Let;
 import org.still.src.MethodCall;
 import org.still.src.PropertyAccess;
 import org.still.src.Statement;
@@ -17,6 +18,7 @@ import org.still.src.StringLiteral;
 import org.still.src.Symbol;
 import org.still.src.Token;
 import org.still.src.TokenType;
+import org.still.src.While;
 
 public class Parser {
 	public Expression parseExpression(String str) {
@@ -78,6 +80,31 @@ public class Parser {
 			
 			return new Case(alternatives, null);
 		}
+		
+		if(ctx.currentToken().isSymbol("while")) {
+			ctx.nextToken();
+			
+			Expression condition = brackets(ctx, true);
+			Expression body = expression(ctx);
+			
+			return new While(condition, body);
+		}
+		
+		if(ctx.currentToken().isSymbol("let")) {
+			ctx.nextToken();
+			
+			Symbol name = symbol(ctx, true);
+			
+			if(! (ctx.currentToken().isBinary() && ctx.currentToken().is("="))) {
+				throw new RuntimeException("Expected =");
+			}
+			ctx.nextToken();
+			
+			Expression value = expression(ctx);
+			
+			return new Let(name, value);
+		}
+		
 		return expression(ctx);
 	}
 	

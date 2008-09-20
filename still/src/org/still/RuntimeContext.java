@@ -36,4 +36,13 @@ public class RuntimeContext extends PrototypeStillObject {
 		}
 		return val;
 	}
+
+	@Override
+	public StillObject set(Symbol name, StillObject obj) {
+		StillObject val = super.get(name);
+		if(val != null) {
+			throw new RuntimeException("Cannot change the value of " + name);
+		}
+		return super.set(name, obj);
+	}
 }

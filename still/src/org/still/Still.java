@@ -6,9 +6,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.List;
 
 import org.still.obj.StillObject;
 import org.still.src.Expression;
+import org.still.src.Statement;
 import org.still.src.Symbol;
 
 public class Still {
@@ -37,8 +39,8 @@ public class Still {
 
 	private static String eval(String line) {
 		Context context = Context.get();
-		Expression expr = context.parser.parseExpression(line);
-		StillObject obj = context.runtime.eval(expr);
+		List<Statement> statements = context.parser.parseProgram(line);
+		StillObject obj = context.runtime.eval(statements);
 		return String.valueOf(obj);
 	}
 	

@@ -1,23 +1,28 @@
 package org.still.obj;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.still.RuntimeContext;
 import org.still.src.Expression;
+import org.still.src.Statement;
 import org.still.src.Symbol;
 
 public class StillFunction extends PrototypeStillObject implements CallableStillObject {
 
 	private final RuntimeContext ctx;
 	private final List<Symbol> parameters;
-	private final List<Expression> expressions;
+	private final List<Statement> expressions;
 	
 	public StillFunction(RuntimeContext ctx, List<Symbol> params, final Expression expression) {
-		this(ctx, params, Arrays.asList(expression));
+		this.ctx = ctx;
+		this.parameters = params;
+		this.expressions = new ArrayList<Statement>();
+		this.expressions.add(expression);
 	}
 	
-	public StillFunction(RuntimeContext ctx, List<Symbol> params, List<Expression> expressions) {
+	public StillFunction(RuntimeContext ctx, List<Symbol> params, List<Statement> expressions) {
 		this.ctx = ctx;
 		this.parameters = params;
 		this.expressions = expressions;
@@ -37,7 +42,7 @@ public class StillFunction extends PrototypeStillObject implements CallableStill
 		newCtx.set(Symbol.get("thisCtx"), newCtx);
 		
 		StillObject result = null;
-		for(Expression expr : expressions) {
+		for(Statement expr : expressions) {
 			result = expr.eval(newCtx);
 		}
 		return result;

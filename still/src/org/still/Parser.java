@@ -6,10 +6,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.still.src.BooleanLiteral;
+import org.still.src.Case;
+import org.still.src.CaseWhen;
 import org.still.src.Expression;
 import org.still.src.IntegerLiteral;
 import org.still.src.MethodCall;
 import org.still.src.PropertyAccess;
+import org.still.src.Statement;
 import org.still.src.StringLiteral;
 import org.still.src.Symbol;
 import org.still.src.Token;
@@ -21,6 +24,60 @@ public class Parser {
 		System.out.println("::Lex : " + tokens);
 		ParserContext ctx = new ParserContext(tokens);
 		ctx.nextToken();
+		return expression(ctx);
+	}
+
+	public List<Statement> parseProgram(String str) {
+		List<Token> tokens = Lexer.tokenize(str);
+		System.out.println("::Lex : " + tokens);
+		ParserContext ctx = new ParserContext(tokens);
+		ctx.nextToken();
+		return statements(ctx);
+	}
+	
+	private List<Statement> statements(ParserContext ctx) {
+		List<Statement> result = new ArrayList<Statement>();
+		Statement current = statement(ctx);
+		if(current == null) {
+			return result;
+		}
+		
+		result.add(current);
+		while(ctx.hasMoreTokens() && ctx.currentToken().isSeparator(";")) {
+			ctx.nextToken();
+			current = statement(ctx);
+			if(current == null) {
+				throw new RuntimeException("Statement expected!");
+			}
+			result.add(current);
+		}
+		
+		return result;
+	}
+	
+	private Statement statement(ParserContext ctx) {
+		if(ctx.currentToken().isSymbol("case")) {
+			ctx.nextToken();
+			
+			List<CaseWhen> alternatives = new ArrayList<CaseWhen>();
+			while(ctx.currentToken().isSymbol("when")) {
+				ctx.nextToken();
+				
+				Expression condition = brackets(ctx, true);
+				Expression consequent = expression(ctx);
+				
+				alternatives.add(new CaseWhen(condition, consequent));
+			}
+			
+			if(ctx.currentToken().isSymbol("otherwise")) {
+				ctx.nextToken();
+				
+				Expression consequent = expression(ctx);
+				return new Case(alternatives, consequent);
+			}
+			
+			return new Case(alternatives, null);
+		}
 		return expression(ctx);
 	}
 	
@@ -114,18 +171,12 @@ public class Parser {
 			return ident;
 		}
 		
-		Token token = ctx.currentToken();
-		if(token.isSeparator("(")) {
-			ctx.nextToken();
-			Expression internal = expression(ctx);
-			token = ctx.currentToken();
-			if(! token.isSeparator(")")) {
-				throw new RuntimeException("Parse failed exception: expected )");
-			}
-			ctx.nextToken();
-			return internal;
+		Expression brackets = brackets(ctx, false);
+		if(brackets != null) {
+			return brackets;
 		}
 		
+		Token token = ctx.currentToken();
 		if(token.type == TokenType.STRING) {
 			ctx.nextToken();
 			return new StringLiteral(token.value);
@@ -141,11 +192,13 @@ public class Parser {
 			
 			token = ctx.currentToken();
 			if(token.isSymbol("t")) {
+				ctx.nextToken();
 				return new BooleanLiteral(true);
 			} else if(token.isSymbol("f")) {
+				ctx.nextToken();
 				return new BooleanLiteral(false);
 			} else if(token.isSeparator("[")) {
-				// List
+				throw new UnsupportedOperationException();
 			}
 		}
 		
@@ -164,5 +217,25 @@ public class Parser {
 		} else {
 			return null;
 		}
+	}
+	
+	private Expression brackets(ParserContext ctx, boolean strict) {
+		Token token = ctx.currentToken();
+		if(! token.isSeparator("(")) {
+			if(strict) {
+				throw new RuntimeException("Expected (expression)");
+			} else {
+				return null;
+			}
+		}
+		
+		ctx.nextToken();
+		Expression internal = expression(ctx);
+		token = ctx.currentToken();
+		if(! token.isSeparator(")")) {
+			throw new RuntimeException("Parse failed exception: expected )");
+		}
+		ctx.nextToken();
+		return internal;
 	}
 }

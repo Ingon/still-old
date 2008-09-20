@@ -30,8 +30,11 @@ public class MethodCall implements Expression {
 		}
 		StillObject targetObject = object.eval(ctx);
 		StillObject target = targetObject.get(property);
+		if(target == null) {
+			throw new RuntimeException("Method not found (" + property + ")");
+		}
 		if(! (target instanceof CallableStillObject)) {
-			throw new RuntimeException("Not a method!");
+			throw new RuntimeException("Not a method! (" + property + ")");
 		}
 		CallableStillObject rtarget = (CallableStillObject) target;
 		

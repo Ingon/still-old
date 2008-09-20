@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.still.RuntimeSupport;
 import org.still.src.Symbol;
 
 public class JavaStillObject implements StillObject {
@@ -23,7 +24,7 @@ public class JavaStillObject implements StillObject {
 		if(fld != null) {
 			try {
 				Object obj = fld.get(delegate);
-				return wrapIfNecessary(obj);
+				return RuntimeSupport.wrap(obj);
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
@@ -33,13 +34,6 @@ public class JavaStillObject implements StillObject {
 			throw new RuntimeException("Property not found: " + name);
 		}
 		return new JavaCallableStillObject(methods);
-	}
-
-	protected static StillObject wrapIfNecessary(Object obj) {
-		if(obj instanceof StillObject) {
-			return (StillObject) obj;
-		}
-		return new JavaStillObject(obj);
 	}
 
 	public StillObject set(Symbol name, StillObject obj) {
@@ -52,7 +46,7 @@ public class JavaStillObject implements StillObject {
 					newObject = ((JavaStillObject) obj).delegate;
 				}
 				fld.set(delegate, newObject);
-				return wrapIfNecessary(oldObject);
+				return RuntimeSupport.wrap(oldObject);
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}

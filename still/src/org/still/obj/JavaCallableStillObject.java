@@ -3,6 +3,7 @@ package org.still.obj;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.still.RuntimeSupport;
 import org.still.src.Symbol;
 
 public class JavaCallableStillObject implements CallableStillObject {
@@ -22,7 +23,7 @@ public class JavaCallableStillObject implements CallableStillObject {
 		Method method = findRealMethod(rparams);
 		try {
 			Object result = method.invoke(delegate, rparams);
-			return JavaStillObject.wrapIfNecessary(result);
+			return RuntimeSupport.wrap(result);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

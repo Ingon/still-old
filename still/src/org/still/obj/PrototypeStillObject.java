@@ -30,6 +30,6 @@ public class PrototypeStillObject implements StillObject {
 		if(! (obj instanceof CallableStillObject)) {
 			return super.toString();
 		}
-		return String.valueOf(((CallableStillObject) obj).apply(this, Collections.<StillObject>emptyList()));
+		return "PSO: " + String.valueOf(((CallableStillObject) obj).apply(this, Collections.<StillObject>emptyList()));
 	}
 }

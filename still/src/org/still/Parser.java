@@ -3,17 +3,28 @@ package org.still;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.still.src.Block;
+import org.still.src.BodyFragment;
 import org.still.src.BooleanLiteral;
 import org.still.src.Case;
 import org.still.src.CaseWhen;
+import org.still.src.Constituent;
+import org.still.src.Declaration;
+import org.still.src.Definition;
 import org.still.src.Expression;
+import org.still.src.Function;
+import org.still.src.FunctionCall;
 import org.still.src.IntegerLiteral;
 import org.still.src.Let;
+import org.still.src.ListFragment;
+import org.still.src.Macro;
 import org.still.src.MethodCall;
 import org.still.src.PropertyAccess;
+import org.still.src.SourceRecord;
 import org.still.src.Statement;
 import org.still.src.StringLiteral;
 import org.still.src.Symbol;
@@ -22,6 +33,9 @@ import org.still.src.TokenType;
 import org.still.src.While;
 
 public class Parser {
+	public static final Map<Symbol, Macro> DEF_BODY_MACROS = new HashMap<Symbol, Macro>();
+	public static final Map<Symbol, Macro> DEF_LIST_MACROS = new HashMap<Symbol, Macro>();
+	
 	public Expression parseExpression(String str) {
 		List<Token> tokens = Lexer.tokenize(str);
 		System.out.println("::Lex : " + tokens);
@@ -37,6 +51,145 @@ public class Parser {
 		ctx.nextToken();
 		return statements(ctx);
 	}
+	
+	public SourceRecord parserSource(String src) {
+		List<Token> tokens = Lexer.tokenize(src);
+		System.out.println("::Lex : " + tokens);
+		ParserContext ctx = new ParserContext(tokens);
+		return new SourceRecord(constituents(ctx));
+	}
+	
+	private List<Constituent> constituents(ParserContext ctx) {
+		List<Constituent> result = new ArrayList<Constituent>();
+		Constituent current = constituent(ctx);
+		if(current == null) {
+			throw new RuntimeException("Parse failed, expected at least one constituent");
+		}
+		result.add(current);
+		
+		while(ctx.hasMoreTokens() && ctx.currentToken().isSeparator(";")) {
+			ctx.nextToken();
+			
+			current = constituent(ctx);
+			if(current == null) {
+				continue;
+			}
+			result.add(current);
+		}
+		
+		if(ctx.hasMoreTokens()) {
+			throw new RuntimeException("Parse failed, expected constituent");
+		}
+		
+		return result;
+	}
+	
+	private Constituent constituent(ParserContext ctx) {
+		Constituent current = definition(ctx);
+		if(current != null) {
+			return current;
+		}
+		current = declaration(ctx);
+		if(current != null) {
+			return current;
+		}
+		return expression(ctx);
+	}
+
+	private boolean isMacroName(ParserContext ctx) {
+		Token token = ctx.currentToken();
+		if(! token.isSymbol()) {
+			throw new RuntimeException("Parse failed, expected symbol");
+		}
+		Symbol sym = token.asSymbol();
+		return DEF_BODY_MACROS.containsKey(sym) || DEF_LIST_MACROS.containsKey(sym);
+	}
+	
+	private Definition definition(ParserContext ctx) {
+		if(! ctx.currentToken().isSymbol("def")) {
+			return null;
+		}
+		ctx.nextToken();
+		
+		if(ctx.currentToken().isSymbol("macro")) {
+			ctx.nextToken();
+			return macroDefinition(ctx);
+		}
+		
+		List<Symbol> modifiers = new ArrayList<Symbol>();
+		while(! isMacroName(ctx)) {
+			modifiers.add(ctx.currentToken().asSymbol());
+			ctx.nextToken();
+		}
+		
+		Symbol macroName = ctx.currentToken().asSymbol();
+		ctx.nextToken();
+		
+		if(DEF_BODY_MACROS.containsKey(macroName)) {
+			BodyFragment body = bodyFragment(ctx);
+			Macro macro = DEF_BODY_MACROS.get(macroName);
+			macro.apply(body);
+		} else {
+			ListFragment list = listFragment(ctx);
+			Macro macro = DEF_LIST_MACROS.get(macroName);
+			macro.apply(list);
+		}
+		
+		if(! ctx.currentToken().isSymbol("end")) {
+			throw new RuntimeException("Expected 'end' of macro call");
+		}
+		ctx.nextToken();
+		
+		throw new UnsupportedOperationException();
+	}
+	
+	private Definition macroDefinition(ParserContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	private BodyFragment bodyFragment(ParserContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	private ListFragment listFragment(ParserContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+
+	private Declaration declaration(ParserContext ctx) {
+		Token token = ctx.currentToken();
+		if(token.isSymbol("let")) {
+			ctx.nextToken();
+			token = ctx.currentToken();
+			
+			if(token.isSymbol("handler")) {
+				throw new UnsupportedOperationException();
+			}
+			
+			Symbol sym = symbol(ctx, true);
+			token = ctx.currentToken();
+			if(! (token.isBinary() && token.is("="))) {
+				throw new RuntimeException("Parse failed, expected =.");
+			}
+			Expression expr = expression(ctx);
+			return new Let(sym, expr);
+		} else if(token.isSymbol("local")) {
+			ctx.nextToken();
+			
+			
+		}
+		
+		return null;
+	}
+	
+//	private Declaration function(ParserContext ctx) {
+//		Token token = ctx.currentToken();
+//		if(token.isSymbol("method")) {
+//			ctx.nextToken();
+//			token = ctx.currentToken();
+//		}
+//		
+//		throw new UnsupportedOperationException();
+//	}
 	
 	private List<Statement> statements(ParserContext ctx) {
 		List<Statement> result = new ArrayList<Statement>();
@@ -170,11 +323,26 @@ public class Parser {
 		}
 		
 		Token token = ctx.currentToken();
-		if(! token.isSeparator(".")) {
-			return leaf;
+		if(token.isSeparator(".")) {
+			ctx.nextToken();
+			return parseObjectAccess(ctx, leaf);
+		} else if(token.isSeparator("[")) {
+			// Fun call
+			ctx.nextToken();
+			List<Expression> expressions = expressions(ctx);
+			token = ctx.currentToken();
+			
+			if(! token.isSeparator("]")) {
+				throw new RuntimeException("Expected ]");
+			}
+			
+			return new FunctionCall(leaf, expressions);
 		}
-		
-		ctx.nextToken();
+		return leaf;
+	}
+
+	private Expression parseObjectAccess(ParserContext ctx, Expression leaf) {
+		Token token;
 		Symbol propName = symbol(ctx, true);
 		
 		if(! ctx.hasMoreTokens()) {
@@ -199,6 +367,11 @@ public class Parser {
 	}
 	
 	private Expression leaf(ParserContext ctx) {
+		Expression fun = function(ctx);
+		if(fun != null) {
+			return fun;
+		}
+		
 		Expression ident = symbol(ctx, false);
 		if(ident != null) {
 			return ident;
@@ -236,6 +409,23 @@ public class Parser {
 		}
 		
 		throw new RuntimeException("Parse failed exception: expected simple expression");
+	}
+	
+	private List<Symbol> symbols(ParserContext ctx) {
+		List<Symbol> result = new ArrayList<Symbol>();
+		Symbol currentSymbol = symbol(ctx, false);
+		if(currentSymbol == null) {
+			return result;
+		}
+		result.add(currentSymbol);
+		
+		while(ctx.currentToken().isSeparator(",")) {
+			ctx.nextToken();
+			currentSymbol = symbol(ctx, true);
+			result.add(currentSymbol);
+		}
+		
+		return result;
 	}
 	
 	private Symbol symbol(ParserContext ctx, boolean strict) {
@@ -289,5 +479,30 @@ public class Parser {
 			throw new RuntimeException("Parse failed exception: expected }");
 		}
 		return new Block(statements);
+	}
+	
+	private Function function(ParserContext ctx) {
+		Token token = ctx.currentToken();
+		if(! token.isSymbol("function")) {
+			return null;
+		}
+		
+		ctx.nextToken();
+		token = ctx.currentToken();
+		if(! token.isSeparator("[")) {
+			throw new RuntimeException("Expected parameters list");
+		}
+		ctx.nextToken();
+		
+		List<Symbol> parameters = symbols(ctx);
+		token = ctx.currentToken();
+		
+		if(! token.isSeparator("]")) {
+			throw new RuntimeException("Expected parameters list end ]");
+		}
+		ctx.nextToken();
+		
+		Expression body = expression(ctx);
+		return new Function(parameters, body);
 	}
 }

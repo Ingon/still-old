@@ -3,7 +3,7 @@ package org.still.src;
 import org.still.RuntimeContext;
 import org.still.obj.StillObject;
 
-public class Let implements Statement {
+public class Let implements Statement, Declaration {
 
 	public final Symbol name;
 	public final Expression value;

@@ -16,7 +16,6 @@ public class Function implements Expression {
 		this.body = body;
 	}
 
-	@Override
 	public StillObject eval(RuntimeContext ctx) {
 		if(body instanceof Block) {
 			return new StillFunction(ctx, parameters, ((Block) body).statements);

@@ -18,10 +18,8 @@ public class RuntimeSupport {
 	public static RuntimeContext initDefault() {
 		final RuntimeContext ctx = new RuntimeContext();
 		ctx.set(Symbol.get("__runtime-suport"), new StillObject() {
-			@Override
 			public StillObject get(final Symbol name) {
 				return new CallableStillObject() {
-					@Override
 					public StillObject apply(StillObject thisRef, List<StillObject> params) {
 						StillObject value = params.get(0);
 						if(name.value.equals("post-wrap-integer")) {
@@ -39,18 +37,15 @@ public class RuntimeSupport {
 						throw new RuntimeException("Unknown method call.");
 					}
 
-					@Override
 					public StillObject get(Symbol name) {
 						throw new UnsupportedOperationException();
 					}
 
-					@Override
 					public StillObject set(Symbol name, StillObject obj) {
 						throw new UnsupportedOperationException();
 					}};
 			}
 
-			@Override
 			public StillObject set(Symbol name, StillObject obj) {
 				throw new UnsupportedOperationException();
 			}});

@@ -13,7 +13,6 @@ public class Let implements Statement, Declaration {
 		this.value = value;
 	}
 
-	@Override
 	public StillObject eval(RuntimeContext ctx) {
 		StillObject realValue = value.eval(ctx);
 		ctx.set(name, realValue);

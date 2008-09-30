@@ -15,7 +15,6 @@ public class Case implements Statement {
 		this.otherwise = otherwise;
 	}
 
-	@Override
 	public StillObject eval(RuntimeContext ctx) {
 		for(CaseWhen when : alternatives) {
 			StillObject condResult = when.condition.eval(ctx);

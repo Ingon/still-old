@@ -14,12 +14,10 @@ public class PrototypeStillObject implements StillObject {
 		internalMap = new TreeMap<Symbol, StillObject>();
 	}
 
-	@Override
 	public StillObject get(Symbol name) {
 		return internalMap.get(name);
 	}
 
-	@Override
 	public StillObject set(Symbol name, StillObject obj) {
 		return internalMap.put(name, obj);
 	}

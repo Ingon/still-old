@@ -28,12 +28,10 @@ public class Symbol implements Comparable<Symbol>, Expression {
 		this.id = ++idGenerator;
 	}
 
-	@Override
 	public int compareTo(Symbol o) {
 		return value.compareTo(o.value);
 	}
 
-	@Override
 	public StillObject eval(RuntimeContext ctx) {
 		return ctx.get(this);
 	}

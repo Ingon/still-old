@@ -27,7 +27,6 @@ public class StillFunction extends PrototypeStillObject implements CallableStill
 		this.expressions = expressions;
 	}
 
-	@Override
 	public StillObject apply(StillObject thisRef, List<StillObject> arguments) {
 		if(parameters.size() != arguments.size()) {
 			throw new RuntimeException("Only exact arguments are supported");

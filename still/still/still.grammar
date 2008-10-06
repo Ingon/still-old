@@ -1,0 +1,59 @@
+# Lexer rules
+
+DIGIT := '0'..'9'
+PRIM_CHAR := 'a'..'z' | 'A'..'Z' | '_'
+OP_CHAR := '~', '!', '@', '$', '%', '^', '&', '*', '-', '+', '/', '<', '>', '=', '\', '|', '?'
+SEP_CHAR := '[', ']', '(', ')', '{', '}', ';'
+SPEC_CHAR := ':', '#', ',', '.'
+
+NAME := (PRIM_CHAR | OP_CHAR), (PRIM_CHAR | OP_CHAR | DIGIT)+
+OPERATOR := OP_CHAR*
+
+# Parser rules
+source-record := source-elements
+source-elements := (source-element, ';')*
+source-element := definition | declaration | expression
+
+definition := macro-call | macro-definition
+macro-call := 'define', modifiers?, DEFINE-BODY-WORD, body-fragment?, 'end'
+modifiers := modifier+
+modifier := UNRESERVED-WORD
+
+#declaration := 'let', ('handler', condition, '=', handler | bindings) | 'local' local-functions
+declaration := 'let', bindings | 'local' local-methods # no handlers
+bindings := variable, '=', expression # no multy let
+local-functions := ('function', named-function-definition)+
+
+expression := operand, expression-rest?
+expression-rest := OPERATOR, expression
+operand := leaf, application*
+leaf := statement | '[', expression, ']' | anonymous-function-definition | variable | literal
+application := '[', arguments?, ']'
+arguments := argument, ',', arguments | argument
+argument := expression
+anonymous-function-definition := 'function', function-definition
+
+literal := INT_LITERAL | DOUBLE_LITERAL | CHAR_LITERAL | STRING_LITERAL | SYMBOL_LITERAL | LIST_LITERAL | MAP_LITERAL | BOOLEAN_LITERAL | PAIR_LITERAL
+variable := NAME
+
+statement := build-in-statement | BEGIN_WORD, body-fragment?, 'end'
+build-in-statement := case-statement
+case-statement := 'case', cases, 'end'
+cases := case-label, source-elements
+case-label := (expression | 'otherwise'), '=>'
+
+named-function-definition := function-definition
+function-definition := '[', parameters?, ']', source-elements, 'end'
+parameters := parameter, ',', parameters | parameter # next, rest, key, default are missing
+
+macro-definition := 'define', 'macro', MACRO-NAME, main-rules, aux-rules?, 'end'
+main-rules := body-rule* | list-rule* | statement-rule* | function-rule*
+body-rule := '{', 'define', definition-head?, MACRO-NAME, pattern?, ';', 'end', '}', '=>', rhs
+list-rule := '{', 'define', definition-head?, MACRO-NAME, pattern?, ';', '}', '=>', rhs
+statement-rule := '{', MACRO-NAME, pattern?, ';', 'end', '}', '=>', rhs
+function-rule := '{', MACRO-NAME, '[', pattern?, ']', '}', '=>', rhs
+definition-head := modifier-pattern+
+modifier-pattern := modifier | pattern-variable
+rhs := '{', template?, '}', ';'
+
+pattern := pattern-list, ';', pattern | pattern-list

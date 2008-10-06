@@ -9,8 +9,8 @@ public class Variable implements Expression {
 		this.name = Symbol.get(name);
 	}
 
-	public Object eval(RuntimeContext runtime) {
-		return runtime.get(name);
+	public Object eval(RuntimeContext ctx) {
+		return ctx.get(name);
 	}
 
 	@Override

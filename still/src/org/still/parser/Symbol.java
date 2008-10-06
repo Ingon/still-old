@@ -38,4 +38,9 @@ public class Symbol {
 	public int hashCode() {
 		return new Long(id).hashCode();
 	}
+
+	@Override
+	public String toString() {
+		return value;
+	}
 }

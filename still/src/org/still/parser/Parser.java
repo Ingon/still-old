@@ -1,6 +1,7 @@
 package org.still.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,15 +36,63 @@ public class Parser implements Iterator<SourceElement> {
 	}
 	
 	private SourceElement sourceElement() {
-		SourceElement element = expression();
+		SourceElement element = null;
+		
+		if(element == null) {
+			element = declaration();
+		}
+		
+		if(element == null) {
+			element = expression();
+		}
+		
 		if(! current.isSeparator(";")) {
 			throw new RuntimeException("Source elements end with ;");
+		}
+		if(lexer.hasNext()) {
+			nextToken();
 		}
 		return element;
 	}
 
+	private Declaration declaration() {
+		if(current.isName("let")) {
+			nextToken();
+			
+			if(! current.isName()) {
+				throw new RuntimeException("Expected variable");
+			}
+			
+			String varName = current.value;
+			nextToken();
+			
+			if(! current.isOperator("=")) {
+				throw new RuntimeException("Expected '=' sign");
+			}
+			nextToken();
+			
+			Expression value = expression();
+			return new LetDeclaration(varName, value);
+		}
+		
+		return null;
+	}
+	
 	private Expression expression() {
-		return operand();
+		Expression left = operand();
+		if(! lexer.hasNext()) {
+			return left;
+		}
+		
+		if(! current.isOperator()) {
+			return left;
+		}
+		
+		Expression operator = new Variable(current.value);
+		nextToken();
+		
+		Expression right = expression();
+		return new FunctionApplication(operator, Arrays.asList(left, right));
 	}
 
 	private Expression operand() {
@@ -92,6 +141,12 @@ public class Parser implements Iterator<SourceElement> {
 	private Expression leaf() {
 		if(current.isName()) {
 			Expression result = new Variable(current.value);
+			nextToken();
+			return result;
+		}
+		
+		if(current.isNumber()) {
+			Expression result = new IntegerLiteral(current.value);
 			nextToken();
 			return result;
 		}

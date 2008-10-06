@@ -15,18 +15,18 @@ public class FunctionApplication implements Expression {
 		this.arguments = arguments;
 	}
 
-	public Object eval(RuntimeContext runtime) {
-		Object targetObj = target.eval(runtime);
+	public Object eval(RuntimeContext ctx) {
+		Object targetObj = target.eval(ctx);
 		if(! (targetObj instanceof Function)) {
 			throw new RuntimeException("Expected function");
 		}
 		
 		List<Object> argumentsObj = new ArrayList<Object>();
 		for(Expression expr : arguments) {
-			argumentsObj.add(expr.eval(runtime));
+			argumentsObj.add(expr.eval(ctx));
 		}
 		
-		return ((Function) targetObj).apply(arguments);
+		return ((Function) targetObj).apply(argumentsObj);
 	}
 
 	@Override

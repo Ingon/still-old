@@ -139,6 +139,11 @@ public class Parser implements Iterator<SourceElement> {
 	}
 	
 	private Expression leaf() {
+		if(current.isName("function")) {
+			nextToken();
+			return functionDefinition();
+		}
+		
 		if(current.isName()) {
 			Expression result = new Variable(current.value);
 			nextToken();
@@ -152,5 +157,48 @@ public class Parser implements Iterator<SourceElement> {
 		}
 
 		throw new RuntimeException("Unknwon token: " + current);
+	}
+
+	private Expression functionDefinition() {
+		if(! current.isSeparator("[")) {
+			throw new RuntimeException("Expected parameters list");
+		}
+		nextToken();
+		List<Symbol> params = parameters();
+		if(! current.isSeparator("]")) {
+			throw new RuntimeException("Expected parameters list end");
+		}
+		nextToken();
+		
+		List<SourceElement> body = new ArrayList<SourceElement>();
+		while(current != null && ! current.isName("end")) {
+			body.add(sourceElement());
+		}
+		
+		if(current == null) {
+			throw new RuntimeException("Unfinished function definition");
+		}
+		
+		return new LambdaExpression(params, body);
+	}
+
+	private List<Symbol> parameters() {
+		List<Symbol> parameters = new ArrayList<Symbol>();
+		if(! current.isName()) {
+			return parameters;
+		}
+		parameters.add(Symbol.get(current.value));
+		nextToken();
+		
+		while(current.isSeparator(",")) {
+			nextToken();
+			if(! current.isName()) {
+				throw new RuntimeException("Expected variable name");
+			}
+			parameters.add(Symbol.get(current.value));
+			nextToken();
+		}
+		
+		return parameters;
 	}
 }

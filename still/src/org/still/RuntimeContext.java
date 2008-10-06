@@ -19,4 +19,8 @@ public class RuntimeContext {
 		
 		bindings.put(name, value);
 	}
+
+	public RuntimeContext child() {
+		throw new UnsupportedOperationException();
+	}
 }

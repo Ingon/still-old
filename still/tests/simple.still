@@ -4,15 +4,38 @@
 -[6, 2];
 5 + 5;
 
-let a = 3;
+let a := 3;
 a + a;
 
-let b = function[c] 
+let b := fun[c] 
 	c + c; 
 end;
 b[10];
 
-let d = function[x, y]
+let d := fun[x, y]
 	b[x] - b[y];
 end;
 d[11, 5];
+
+let f := case
+	a > 1 :> 100
+	otherwise :> 34
+end;
+f;
+
+let * := fun[x, y]
+	case
+		y > 1 :> x + [x * y - 1]
+		otherwise :> x
+	end;
+end;
+2 * 3;
+5 * 5;
+
+let xx := fun[x]
+	fun[y]
+		x + y;
+	end;
+end;
+let xxa := xx[4];
+xxa[6];

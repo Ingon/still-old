@@ -31,6 +31,17 @@ public class Main {
 				}
 				return result;
 			}});
+		ctx.add(Symbol.get(">"), new Function() {
+			public Object apply(List<Object> arguments) {
+				if(arguments.size() != 2) {
+					throw new RuntimeException("Expected two arguments");
+				}
+				
+				int first = (Integer) arguments.get(0);
+				int second = (Integer) arguments.get(1);
+				
+				return first > second;
+			}});
 		
 		Lexer lexer = new Lexer(new FileReader("tests/simple.still"));
 		Parser parser = new Parser(lexer);

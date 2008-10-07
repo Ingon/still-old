@@ -66,8 +66,12 @@ public class Parser implements Iterator<SourceElement> {
 			String varName = current.value;
 			nextToken();
 			
+			if(! current.isSpecial(":")) {
+				throw new RuntimeException("Expected :=");
+			}
+			nextToken();
 			if(! current.isOperator("=")) {
-				throw new RuntimeException("Expected '=' sign");
+				throw new RuntimeException("Expected :=");
 			}
 			nextToken();
 			
@@ -139,9 +143,14 @@ public class Parser implements Iterator<SourceElement> {
 	}
 	
 	private Expression leaf() {
-		if(current.isName("function")) {
+		if(current.isName("fun")) {
 			nextToken();
 			return functionDefinition();
+		}
+		
+		if(current.isName("case")) {
+			nextToken();
+			return caseStatement();
 		}
 		
 		if(current.isName()) {
@@ -156,6 +165,18 @@ public class Parser implements Iterator<SourceElement> {
 			return result;
 		}
 
+		if(current.isSeparator("[")) {
+			nextToken();
+			
+			Expression internal = expression();
+			
+			if(! current.isSeparator("]")) {
+				throw new RuntimeException("Expected ]");
+			}
+			nextToken();
+			return internal;
+		}
+		
 		throw new RuntimeException("Unknwon token: " + current);
 	}
 
@@ -181,6 +202,43 @@ public class Parser implements Iterator<SourceElement> {
 		}
 		
 		return new LambdaExpression(params, body);
+	}
+
+	private Expression caseStatement() {
+		List<CaseAlternative> alternatives = new ArrayList<CaseAlternative>();
+		
+		while(! current.isName("end")) {
+			Expression predicate = null;
+			if(current.isName("otherwise")) {
+				predicate = new OtherwisePredicate();
+				nextToken();
+			} else {
+				predicate = expression();
+			}
+			if(! current.isSpecial(":")) {
+				throw new RuntimeException("Expected :>");
+			}
+			nextToken();
+			if(! current.isOperator(">")) {
+				throw new RuntimeException("Expected :>");
+			}
+			nextToken();
+			
+			Expression consequent = expression();
+			
+			alternatives.add(new CaseAlternative(predicate, consequent));
+			
+			if(predicate instanceof OtherwisePredicate) {
+				break;
+			}
+		}
+		
+		if(! current.isName("end")) {
+			throw new RuntimeException("After otherwise there should be end clause");
+		}
+		nextToken();
+		
+		return new CaseStatement(alternatives);
 	}
 
 	private List<Symbol> parameters() {

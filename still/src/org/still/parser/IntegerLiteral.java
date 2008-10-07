@@ -10,7 +10,6 @@ public class IntegerLiteral implements Expression {
 		this.value = new Integer(valueStr);
 	}
 	
-	@Override
 	public Object eval(RuntimeContext ctx) {
 		return value;
 	}

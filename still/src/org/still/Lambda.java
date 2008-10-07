@@ -17,7 +17,6 @@ public class Lambda implements Function {
 		this.body = body;
 	}
 
-	@Override
 	public Object apply(List<Object> arguments) {
 		if(params.size() != arguments.size()) {
 			throw new RuntimeException("Illegal number of arguments");

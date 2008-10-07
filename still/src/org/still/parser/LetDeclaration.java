@@ -12,7 +12,6 @@ public class LetDeclaration implements Declaration {
 		this.value = value;
 	}
 
-	@Override
 	public Object eval(RuntimeContext ctx) {
 		ctx.add(name, value.eval(ctx));
 		return name;

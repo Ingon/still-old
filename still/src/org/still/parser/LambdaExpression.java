@@ -15,7 +15,6 @@ public class LambdaExpression implements Expression {
 		this.body = body;
 	}
 
-	@Override
 	public Object eval(RuntimeContext ctx) {
 		return new Lambda(ctx, params, body);
 	}

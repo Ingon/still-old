@@ -11,7 +11,6 @@ public class Main {
 	public static void main(String[] args) {
 		RuntimeContext ctx = new RuntimeContext();
 		ctx.add(Symbol.get("+"), new Function() {
-			@Override
 			public Object apply(List<Object> arguments) {
 				int result = 0;
 				for(Object intObj : arguments) {
@@ -20,7 +19,6 @@ public class Main {
 				return result;
 			}});
 		ctx.add(Symbol.get("-"), new Function() {
-			@Override
 			public Object apply(List<Object> arguments) {
 				int result = (Integer) arguments.get(0);
 				if(arguments.size() == 1) {

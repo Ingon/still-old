@@ -1,52 +1,18 @@
-// Single line comment
-/.
-	Multiple line comment
-./
+3;
++[3, 4];
+-[3];
+-[6, 2];
+5 + 5;
 
-/.
-	Literals
-./
-1; // integer literal
-#b0101 // binary notation
-#o735 // octal notation
-#x4fdd // hex notation
-4/5 // ratio literal
-6.02e20 // double literal
+let a = 3;
+a + a;
 
-#cz; // char literal
-'test'; // string literal 
-#'test'; // symbol
-test:; //symbol
+let b = function[c] 
+	c + c; 
+end;
+b[10];
 
-/.
-	Definitions
-./
-def var a = 3; // variable
-def const b = 4; // constant
-def fun tst[a, b] // simple function
-	+[a, b];
+let d = function[x, y]
+	b[x] - b[y];
 end;
-def gen asw[a] end; // single dispatch generic
-def gen acz[q, r] // multy dispatch generic
-	+[name[q], name[r]];
-end;
-def class <point>
-	slot x;
-	slot y;
-end;
-def macro if-definer
-	{ if [?:expression] ?:body ?elses end; } => { case 
-													?test => ?body;
-												 	?elses 
-												 end;
-elses:
-	{ } => { }
-	{ else ?:body } => { otherwise => ?body }
-	{ elseif [?:expression] ?:body ... } => { ?expression => ?body; }
-end;
-
-print 1;
-print $ toString 1;
-if 3 > 1
-	print 'yeah';
-end
+d[11, 5];

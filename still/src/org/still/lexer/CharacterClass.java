@@ -9,6 +9,7 @@ abstract class CharacterClass {
 		sb.append(lexer.ch);
 		while(lexer.hasNext()) {
 			lexer.nextChar();
+			
 			if(matches(lexer.ch)) {
 				sb.append(lexer.ch);
 			} else {

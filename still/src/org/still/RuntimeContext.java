@@ -6,10 +6,28 @@ import java.util.Map;
 import org.still.parser.Symbol;
 
 public class RuntimeContext {
-	private Map<Symbol, Object> bindings = new HashMap<Symbol, Object>();
+	private final RuntimeContext parent;
+	private final Map<Symbol, Object> bindings = new HashMap<Symbol, Object>();
+	
+	public RuntimeContext() {
+		this.parent = null;
+	}
+	
+	private RuntimeContext(RuntimeContext parent) {
+		this.parent = parent;
+	}
 	
 	public Object get(Symbol name) {
-		return bindings.get(name);
+		Object value = bindings.get(name);
+		if(value != null) {
+			return value;
+		}
+		
+		if(parent == null) {
+			throw new RuntimeException("Symbol " + name + " not found");
+		}
+		
+		return parent.get(name);
 	}
 	
 	public void add(Symbol name, Object value) {
@@ -21,6 +39,6 @@ public class RuntimeContext {
 	}
 
 	public RuntimeContext child() {
-		throw new UnsupportedOperationException();
+		return new RuntimeContext(this);
 	}
 }

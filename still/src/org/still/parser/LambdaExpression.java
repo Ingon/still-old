@@ -18,4 +18,9 @@ public class LambdaExpression implements Expression {
 	public Object eval(RuntimeContext ctx) {
 		return new Lambda(ctx, params, body);
 	}
+
+	@Override
+	public String toString() {
+		return "function" + params + " " + body;
+	}
 }

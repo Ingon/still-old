@@ -1,6 +1,8 @@
 package org.still.lexer;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
@@ -22,6 +24,16 @@ public class Lexer implements Iterator<Token> {
 	
 	private final CharacterClass nameStart = new CompositeCharacterClass(alpha, operator);
 	private final CharacterClass namePart = new CompositeCharacterClass(alpha, digit, operator);
+	
+	public Lexer(Reader reader) {
+		input = reader;
+		nextChar();
+	}
+	
+	public Lexer(InputStream is) {
+		input = new InputStreamReader(is);
+		nextChar();
+	}
 	
 	public Lexer(String text) {
 		input = new StringReader(text);

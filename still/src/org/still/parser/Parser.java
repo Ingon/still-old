@@ -174,6 +174,7 @@ public class Parser implements Iterator<SourceElement> {
 		while(current != null && ! current.isName("end")) {
 			body.add(sourceElement());
 		}
+		nextToken();
 		
 		if(current == null) {
 			throw new RuntimeException("Unfinished function definition");

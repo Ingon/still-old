@@ -1,5 +1,6 @@
 package org.still;
 
+import java.io.FileReader;
 import java.util.List;
 
 import org.still.lexer.Lexer;
@@ -8,7 +9,7 @@ import org.still.parser.SourceElement;
 import org.still.parser.Symbol;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		RuntimeContext ctx = new RuntimeContext();
 		ctx.add(Symbol.get("+"), new Function() {
 			public Object apply(List<Object> arguments) {
@@ -31,7 +32,7 @@ public class Main {
 				return result;
 			}});
 		
-		Lexer lexer = new Lexer("3;+[3, 4];-[3];-[6, 2];5 + 5;let a = 3;a + a;");
+		Lexer lexer = new Lexer(new FileReader("tests/simple.still"));
 		Parser parser = new Parser(lexer);
 		
 		while(parser.hasNext()) {

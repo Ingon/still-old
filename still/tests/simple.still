@@ -33,8 +33,9 @@ end;
 5 * 5;
 
 let xx := fun[x]
+	let z := x * x;
 	fun[y]
-		x + y;
+		z + y;
 	end;
 end;
 let xxa := xx[4];
